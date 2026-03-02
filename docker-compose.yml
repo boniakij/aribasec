@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  security-monitor:
+    build: .
+    image: security-monitor:latest
+    container_name: security-monitor
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_NICE
+    privileged: true
+    environment:
+      - MONITOR_INTERFACE=eth0
+      - WAZUH_MANAGER=wazuh-manager.local
+      - TZ=UTC
+    volumes:
+      - ./logs/suricata:/var/log/suricata
+      - ./logs/zeek:/opt/zeek/logs
+      - ./logs/wazuh:/var/ossec/logs
+      - ./rules:/opt/security/rules
+      - ./scripts:/opt/security/scripts
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
